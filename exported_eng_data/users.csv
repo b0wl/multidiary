@@ -1,0 +1,6 @@
+IdUsers,Login,Password,CreationDate,UserRole,NumPosts,NumComments
+1,john,janek,"2016-12-04 14:24:04",1,2,1
+2,peter,piotrek,"2016-12-04 14:24:04",2,1,1
+3,vojislav,wojtek,"2016-12-04 14:24:04",2,2,0
+4,oskarek89,barca,"2016-12-04 14:24:04",3,2,0
+5,gpdm2j,haslo123,"2016-12-04 14:24:04",4,1,0
