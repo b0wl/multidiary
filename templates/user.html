@@ -1,0 +1,41 @@
+{% extends "home.html" %}
+{% block body %}
+
+
+<div>
+    <br>
+    Login: {{user.Login}}<br>
+    Postów: {{user.NumPosts}}<br>
+    Komentarzy: {{user.NumComments}}<br>
+    Status: <span style="color:
+                     {% if status == 'banned' %}
+                            #555555
+                     {% endif %}
+                     {% if status == 'admin' %}
+                            #f700ce
+                     {% endif %}
+                     {% if status == 'common' %}
+                            #f7c500
+                     {% endif %}
+                     {% if status == 'deleted' %}
+                            #BBBBBB
+                     {% endif %}
+                     ">{{status}}</span><br>
+    Posty:
+    <div>
+        {% for post in posts %}
+             &nbsp;&nbsp;&nbsp;&nbsp;At {{post.CreationDate}}: {{post.Content}}
+            <br>
+        {% endfor %}
+    </div>
+    Komentarze:
+    <div>
+        {% for comment in comments %}
+            &nbsp;&nbsp;&nbsp;&nbsp;At {{comment.parent_content}}: {{comment.Content}}
+            <br>
+        {% endfor %}
+    </div>
+    <br>
+</div>
+
+{% endblock %}

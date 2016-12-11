@@ -1,0 +1,13 @@
+{% extends "home.html" %}
+{% block body %}
+
+
+{% for post in posts %}
+<div>
+    <br>
+    <a href="{{ url_for('user',Login=post.author.Login) }}">{{post.author.Login}}</a> at {{post.CreationDate}}: <a href="{{ url_for('post',idPosts=post.idPosts) }}">{{post.brief_content}}</a>...
+    <br>
+</div>
+{% endfor %}
+
+{% endblock %}
