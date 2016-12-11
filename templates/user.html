@@ -5,8 +5,8 @@
 <div>
     <br>
     Login: {{user.Login}}<br>
-    Postów: {{user.NumPosts}}<br>
-    Komentarzy: {{user.NumComments}}<br>
+    Posts: {{user.NumPosts}}<br>
+    Comments: {{user.NumComments}}<br>
     Status: <span style="color:
                      {% if status == 'banned' %}
                             #555555
@@ -21,14 +21,14 @@
                             #BBBBBB
                      {% endif %}
                      ">{{status}}</span><br>
-    Posty:
+    Posts:
     <div>
         {% for post in posts %}
              &nbsp;&nbsp;&nbsp;&nbsp;At {{post.CreationDate}}: {{post.Content}}
             <br>
         {% endfor %}
     </div>
-    Komentarze:
+    Comments:
     <div>
         {% for comment in comments %}
             &nbsp;&nbsp;&nbsp;&nbsp;At {{comment.CreationDate}}: {{comment.Content}}

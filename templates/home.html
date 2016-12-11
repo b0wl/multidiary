@@ -1,13 +1,13 @@
 <html>
   <head>
     {% if title %}
-    <title>{{ title }} - wieloblog</title>
+    <title>{{ title }} - multidiary</title>
     {% else %}
-    <title>Wieloblog</title>
+    <title>Multidiary</title>
     {% endif %}
   </head>
   <body>
-    <h1>Kto na wielobloga wchodzi, temu w życiu nie wychodzi<br><br></h1>
+    <h1><a href="{{ url_for('index')}}">Multidiary</a> - your place where dreams eat dirt<br><br></h1>
 
      {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}

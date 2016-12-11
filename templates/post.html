@@ -15,4 +15,20 @@
 </div>
 {% endfor %}
 
+<br><br><br>
+<form action="{{ url_for('post', idPost=post.idPosts) }}" method="post">
+    {{ form.csrf }}
+
+    <div class="input text">
+        {{ form.author.label }} {{ form.author}}
+    </div>
+    <div class="input text">
+        {{ form.content.label }} {{ form.content }}
+    </div>
+
+    <div class="input submit">
+        <input type="Submit" value="Send" />
+    </div>
+</form>
+
 {% endblock %}

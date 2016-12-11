@@ -68,16 +68,30 @@ app.config.from_object('config')
 db = SQLAlchemy(app)
 
 
-@app.route('/')
-@app.route('/index')
+@app.route('/', methods=['GET', 'POST'])
+@app.route('/index', methods=['GET', 'POST'])
 def index():
+    form = NewPostForm(request.form)
 
-    posts = db.session.query(Post).order_by(Post.CreationDate).all()
+    if request.method == 'POST':
+        author = db.session.query(User).filter_by(Login=form.author.data).one()
+
+        new_post = Post(Content=form.content.data, CreationDate=datetime.utcnow(),
+                        Author=author.idUsers)
+        db.session.add(new_post)
+        db.session.commit()
+        flash('Post added!')
+        return redirect(url_for('index'))
+
+    posts = db.session.query(Post).order_by(Post.CreationDate.desc()).all()
 
     for post in posts:
-        post.brief_content = ' '.join(post.Content.split(' ')[:2])
+        if len(post.Content.split(' ')) > 7:
+            post.brief_content = ' '.join(post.Content.split(' ')[:7])+'...'
+        else:
+            post.brief_content = post.Content
 
-    return render_template('main.html', posts=posts)
+    return render_template('main.html', posts=posts, form=form)
 
 
 @app.route('/user/<string:Login>')
@@ -94,35 +108,37 @@ def user(Login):
 
 
 class NewPostForm(Form):
+    author = StringField('author')
     content = StringField('content')
 
 
-@app.route('/say/<string:Login>', methods=['GET', 'POST'])
-def say(Login):
-    user = db.session.query(User).filter_by(Login=Login).one()
+@app.route('/post/<string:idPost>', methods=['GET', 'POST'])
+def post(idPost):
+
+    post = db.session.query(Post).filter_by(idPosts=idPost).one()
+    comments = post.comments
 
     form = NewPostForm(request.form)
     if request.method == 'POST':
-        post = Post(Content=form.content.data, CreationDate=datetime.utcnow(),
-                    Author=user.idUsers)
-        db.session.add(post)
+        author = db.session.query(User).filter_by(Login=form.author.data).one()
+
+        new_comment = Comment(Content=form.content.data, CreationDate=datetime.utcnow(),
+                              Author=author.idUsers, ParentPost=post.idPosts)
+        db.session.add(new_comment)
         db.session.commit()
-        flash('Dodano post!')
-        return redirect(url_for('say', Login=Login))
-    return render_template('say.html',
-                           title='You saying what?!',
-                           form=form,
-                           user=user)
+        flash('Comment added!')
+        return redirect(url_for('post', idPost=idPost))
+
+    if len(post.Content) > 15:
+        post.title = post.Content[:15]+'...'
+    else:
+        post.title = post.Content
+
+    return render_template('post.html',
+                           title=post.title,
+                           post=post,
+                           comments=comments,
+                           form=form)
 
 
-
-@app.route('/post/<string:idPosts>')
-def post(idPosts):
-
-    post = db.session.query(Post).filter_by(idPosts=idPosts).one()
-    comments = post.comments
-
-    return render_template('post.html', post=post, comments=comments)
-
-
-app.run(host='localhost', port=8080, debug=True)
+app.run(host='localhost', port=80, debug=True)

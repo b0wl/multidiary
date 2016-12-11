@@ -5,9 +5,25 @@
 {% for post in posts %}
 <div>
     <br>
-    <a href="{{ url_for('user',Login=post.author.Login) }}">{{post.author.Login}}</a> at {{post.CreationDate}}: <a href="{{ url_for('post',idPosts=post.idPosts) }}">{{post.brief_content}}</a>...
+    <a href="{{ url_for('user',Login=post.author.Login) }}">{{post.author.Login}}</a> at {{post.CreationDate}}: <a href="{{ url_for('post',idPost=post.idPosts) }}">{{post.brief_content}}</a>
     <br>
 </div>
 {% endfor %}
+
+<br><br><br>
+<form action="{{ url_for('index') }}" method="post">
+    {{ form.csrf }}
+
+    <div class="input text">
+        {{ form.author.label }} {{ form.author}}
+    </div>
+    <div class="input text">
+        {{ form.content.label }} {{ form.content }}
+    </div>
+
+    <div class="input submit">
+        <input type="Submit" value="Send" />
+    </div>
+</form>
 
 {% endblock %}
