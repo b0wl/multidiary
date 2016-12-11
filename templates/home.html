@@ -9,6 +9,16 @@
   <body>
     <h1>Kto na wielobloga wchodzi, temu w życiu nie wychodzi<br><br></h1>
 
+     {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <ul>
+                    {% for message in messages %}
+                        <li>{{ message[1] }}</li>
+                    {% endfor %}
+                </ul>
+            {% endif %}
+     {% endwith %}
+
     {% block body %}{% endblock %}
 
   </body>

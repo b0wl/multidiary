@@ -31,7 +31,7 @@
     Komentarze:
     <div>
         {% for comment in comments %}
-            &nbsp;&nbsp;&nbsp;&nbsp;At {{comment.parent_content}}: {{comment.Content}}
+            &nbsp;&nbsp;&nbsp;&nbsp;At {{comment.CreationDate}}: {{comment.Content}}
             <br>
         {% endfor %}
     </div>

@@ -1,9 +1,14 @@
-from flask import Flask, render_template
+from flask import Flask, render_template, redirect, flash, url_for, request
 from flask_sqlalchemy import SQLAlchemy
+
+from flask_wtf import Form
+from wtforms import StringField
 
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, VARCHAR, DateTime, ForeignKey
 from sqlalchemy.orm import relationship
+
+from datetime import datetime
 
 Base = declarative_base()
 
@@ -59,9 +64,7 @@ class Role(Base):
 
 
 app = Flask('wieloblog')
-app.config.update(
-    SQLALCHEMY_DATABASE_URI='mysql://root:pw@0.0.0.0:3306/Mikroblog'
-)
+app.config.from_object('config')
 db = SQLAlchemy(app)
 
 
@@ -88,6 +91,29 @@ def user(Login):
         comment.parent_content = comment.parent.Content
 
     return render_template('user.html', user=user, status=status.RoleName, posts=posts, comments=comments)
+
+
+class NewPostForm(Form):
+    content = StringField('content')
+
+
+@app.route('/say/<string:Login>', methods=['GET', 'POST'])
+def say(Login):
+    user = db.session.query(User).filter_by(Login=Login).one()
+
+    form = NewPostForm(request.form)
+    if request.method == 'POST':
+        post = Post(Content=form.content.data, CreationDate=datetime.utcnow(),
+                    Author=user.idUsers)
+        db.session.add(post)
+        db.session.commit()
+        flash('Dodano post!')
+        return redirect(url_for('say', Login=Login))
+    return render_template('say.html',
+                           title='You saying what?!',
+                           form=form,
+                           user=user)
+
 
 
 @app.route('/post/<string:idPosts>')
