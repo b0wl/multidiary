@@ -160,7 +160,7 @@ def post(idPost):
 
     form = NewContentForm(request.form)
     if request.method == 'POST':
-        author = db.session.query(User).filter_by(Login=form.author.data).one()
+        author = g.user
 
         new_comment = Comment(Content=form.content.data, CreationDate=datetime.utcnow(),
                               Author=author.idUsers, ParentPost=post.idPosts)
