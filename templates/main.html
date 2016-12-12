@@ -1,6 +1,13 @@
 {% extends "home.html" %}
 {% block body %}
 
+{%if not g.user.Login%}
+     <h2><form action="{{ url_for('index') }}" method="post">
+        <span class="input text">{{ form.login.label }} {{ form.login}}</span>
+        <span class="input text">{{ form.password.label }} {{ form.password }}</span>
+        <span class="input submit"><input type="Submit" value="Login" /></span>
+    </form></h2>
+{% endif %}
 
 {% for post in posts %}
 <div>
@@ -10,20 +17,17 @@
 </div>
 {% endfor %}
 
-<br><br><br>
-<form action="{{ url_for('index') }}" method="post">
-    {{ form.csrf }}
+{%if g.user.Login%}
+    <br><br><br>
+    <form action="{{ url_for('index') }}" method="post">
+        <div class="input text">
+            {{ form2.content.label }} {{ form2.content }}
+        </div>
+        <div class="input submit">
+            <input type="Submit" value="Send" />
+        </div>
+    </form>
+{% endif %}
 
-    <div class="input text">
-        {{ form.author.label }} {{ form.author}}
-    </div>
-    <div class="input text">
-        {{ form.content.label }} {{ form.content }}
-    </div>
-
-    <div class="input submit">
-        <input type="Submit" value="Send" />
-    </div>
-</form>
 
 {% endblock %}

@@ -1,8 +1,8 @@
-from flask import Flask, render_template, redirect, flash, url_for, request
+from flask import Flask, render_template, redirect, flash, url_for, request, g, session
 from flask_sqlalchemy import SQLAlchemy
 
 from flask_wtf import Form
-from wtforms import StringField
+from wtforms import StringField, BooleanField
 
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, VARCHAR, DateTime, ForeignKey
@@ -68,19 +68,55 @@ app.config.from_object('config')
 db = SQLAlchemy(app)
 
 
+class NewContentForm(Form):
+    author = StringField('author')
+    content = StringField('content')
+
+
+class LoginForm(Form):
+    login = StringField('Login')
+    password = StringField('Password')
+    piotr = BooleanField('Czy szanujesz Piotra? ')
+
+
+@app.before_request
+def before_request():
+    if 'user' in session:
+        user = user = db.session.query(User).filter_by(Login=session['user']).one()
+    else:
+        user = User()
+        user.Login = ''
+
+    g.user = user
+
+
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/index', methods=['GET', 'POST'])
 def index():
-    form = NewPostForm(request.form)
+    form = LoginForm(request.form)
+    form2 = NewContentForm(request.form)
 
     if request.method == 'POST':
-        author = db.session.query(User).filter_by(Login=form.author.data).one()
+        if form.login.data:
+            login = form.login.data
+            password = form.password.data
+            try:
+                user = db.session.query(User).filter_by(Login=login).one()
+            except:
+                flash('No user of login {}!'.format(login))
+            else:
+                if user.Password == password:
+                    session["user"] = user.Login
+                    flash('Logged in as {}'.format(user.Login))
+                else:
+                    flash('Incorrect password for user {}. Correct password is {}.'.format(login, user.Password))
+        elif form2.content.data:
+            new_post = Post(Content=form2.content.data, CreationDate=datetime.utcnow(),
+                               Author=g.user.idUsers)
+            db.session.add(new_post)
+            db.session.commit()
+            flash('Post added!')
 
-        new_post = Post(Content=form.content.data, CreationDate=datetime.utcnow(),
-                        Author=author.idUsers)
-        db.session.add(new_post)
-        db.session.commit()
-        flash('Post added!')
         return redirect(url_for('index'))
 
     posts = db.session.query(Post).order_by(Post.CreationDate.desc()).all()
@@ -91,7 +127,14 @@ def index():
         else:
             post.brief_content = post.Content
 
-    return render_template('main.html', posts=posts, form=form)
+    return render_template('main.html', posts=posts, form=form, form2=form2)
+
+
+@app.route('/logout_handle', methods=['GET'])
+def logout_handle():
+    del(session['user'])
+    flash('Logged out')
+    return redirect(url_for('index'))
 
 
 @app.route('/user/<string:Login>')
@@ -107,9 +150,6 @@ def user(Login):
     return render_template('user.html', user=user, status=status.RoleName, posts=posts, comments=comments)
 
 
-class NewPostForm(Form):
-    author = StringField('author')
-    content = StringField('content')
 
 
 @app.route('/post/<string:idPost>', methods=['GET', 'POST'])
@@ -118,7 +158,7 @@ def post(idPost):
     post = db.session.query(Post).filter_by(idPosts=idPost).one()
     comments = post.comments
 
-    form = NewPostForm(request.form)
+    form = NewContentForm(request.form)
     if request.method == 'POST':
         author = db.session.query(User).filter_by(Login=form.author.data).one()
 
@@ -141,4 +181,4 @@ def post(idPost):
                            form=form)
 
 
-app.run(host='localhost', port=80, debug=True)
+app.run(host='localhost', port=8080, debug=True)
