@@ -76,13 +76,18 @@ class NewContentForm(Form):
 class LoginForm(Form):
     login = StringField('Login')
     password = StringField('Password')
+
+
+class RegisterForm(Form):
+    newlogin = StringField('Login')
+    newpassword = StringField('Password')
     piotr = BooleanField('Czy szanujesz Piotra? ')
 
 
 @app.before_request
 def before_request():
     if 'user' in session:
-        user = user = db.session.query(User).filter_by(Login=session['user']).one()
+        user = db.session.query(User).filter_by(Login=session['user']).one()
     else:
         user = User()
         user.Login = ''
@@ -95,8 +100,10 @@ def before_request():
 def index():
     form = LoginForm(request.form)
     form2 = NewContentForm(request.form)
+    form3 = RegisterForm(request.form)
 
     if request.method == 'POST':
+        print(form.login.data, form3.newlogin.data)
         if form.login.data:
             login = form.login.data
             password = form.password.data
@@ -112,10 +119,16 @@ def index():
                     flash('Incorrect password for user {}. Correct password is {}.'.format(login, user.Password))
         elif form2.content.data:
             new_post = Post(Content=form2.content.data, CreationDate=datetime.utcnow(),
-                               Author=g.user.idUsers)
+                            Author=g.user.idUsers)
             db.session.add(new_post)
             db.session.commit()
             flash('Post added!')
+        elif form3.newlogin.data:
+            new_user = User(Login=form3.newlogin.data, CreationDate=datetime.utcnow(),
+                            Password=form3.newpassword.data, UserRole=1)
+            db.session.add(new_user)
+            db.session.commit()
+            flash('User added!')
 
         return redirect(url_for('index'))
 
@@ -127,7 +140,7 @@ def index():
         else:
             post.brief_content = post.Content
 
-    return render_template('main.html', posts=posts, form=form, form2=form2)
+    return render_template('main.html', posts=posts, form=form, form2=form2, form3=form3)
 
 
 @app.route('/logout_handle', methods=['GET'])

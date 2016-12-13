@@ -2,10 +2,15 @@
 {% block body %}
 
 {%if not g.user.Login%}
-     <h2><form action="{{ url_for('index') }}" method="post">
+    <h2>Login: <form action="{{ url_for('index') }}" method="post">
         <span class="input text">{{ form.login.label }} {{ form.login}}</span>
         <span class="input text">{{ form.password.label }} {{ form.password }}</span>
         <span class="input submit"><input type="Submit" value="Login" /></span>
+    </form></h2>
+    <h2> Register: <form action="{{ url_for('index') }}" method="post">
+        <span class="input text">{{ form3.newlogin.label }} {{ form3.newlogin}}</span>
+        <span class="input text">{{ form3.newpassword.label }} {{ form3.newpassword }}</span>
+        <span class="input submit"><input type="Submit" value="Register" /></span>
     </form></h2>
 {% endif %}
 
