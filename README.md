@@ -1,4 +1,4 @@
-# wieloblog
+# multidiary
 
 
 
@@ -7,7 +7,7 @@
 ## Downloading repository
 
 ```
-git clone https://github.com/b0wl/wieloblog.git ~/multidiary
+git clone https://github.com/b0wl/multidiary.git ~/multidiary
 cd ~/multidiary
 pip3 install -r requirements
 ```
