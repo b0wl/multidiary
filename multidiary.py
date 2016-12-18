@@ -2,7 +2,7 @@ from flask import Flask, render_template, redirect, flash, url_for, request, g, 
 from flask_sqlalchemy import SQLAlchemy
 
 from flask_wtf import Form
-from wtforms import StringField, BooleanField
+from wtforms import StringField
 
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Integer, VARCHAR, DateTime, ForeignKey
@@ -11,6 +11,8 @@ from sqlalchemy.orm import relationship
 from datetime import datetime
 
 Base = declarative_base()
+
+#  derek banas - python tutorial - fastest way to learn python syntax. Derek is cool guy.
 
 
 class User(Base):
@@ -63,13 +65,12 @@ class Role(Base):
     RoleName = Column(VARCHAR, nullable=False)
 
 
-app = Flask('wieloblog')
-app.config.from_object('config')
-db = SQLAlchemy(app)
+app = Flask('wieloblog')  # create flask app
+app.config.from_object('config')  # quick configuration from file config.py
+db = SQLAlchemy(app)  # connect database with interface provided by sqlalchemy
 
 
-class NewContentForm(Form):
-    author = StringField('author')
+class NewContentForm(Form): # Forms for submitting data
     content = StringField('content')
 
 
@@ -81,10 +82,9 @@ class LoginForm(Form):
 class RegisterForm(Form):
     newlogin = StringField('Login')
     newpassword = StringField('Password')
-    piotr = BooleanField('Czy szanujesz Piotra? ')
 
 
-@app.before_request
+@app.before_request # Triggered BEFORE each request. Just checking if user is logged in
 def before_request():
     if 'user' in session:
         user = db.session.query(User).filter_by(Login=session['user']).one()
@@ -97,14 +97,14 @@ def before_request():
 
 @app.route('/', methods=['GET', 'POST'])
 @app.route('/index', methods=['GET', 'POST'])
+# This function can be accesed at / and /index adresses with GET and POST methods. Default metho is GET.
 def index():
-    form = LoginForm(request.form)
+    form = LoginForm(request.form)  # Prepare login, register and new_post form. May not be used.
     form2 = NewContentForm(request.form)
     form3 = RegisterForm(request.form)
 
-    if request.method == 'POST':
-        print(form.login.data, form3.newlogin.data)
-        if form.login.data:
+    if request.method == 'POST':  # If /index accessed with POST method (by clicking button next to one of forms)
+        if form.login.data:  # check, which form has sent data. If first, process with login
             login = form.login.data
             password = form.password.data
             try:
@@ -114,27 +114,27 @@ def index():
             else:
                 if user.Password == password:
                     session["user"] = user.Login
-                    flash('Logged in as {}'.format(user.Login))
+                    flash('Logged in as {}'.format(user.Login))  # flash is used in home.html to list completed actions
                 else:
                     flash('Incorrect password for user {}. Correct password is {}.'.format(login, user.Password))
-        elif form2.content.data:
+        elif form2.content.data:  # If second, add new post
             new_post = Post(Content=form2.content.data, CreationDate=datetime.utcnow(),
                             Author=g.user.idUsers)
             db.session.add(new_post)
             db.session.commit()
             flash('Post added!')
-        elif form3.newlogin.data:
+        elif form3.newlogin.data:  # Or add new user with 'normal' role
             new_user = User(Login=form3.newlogin.data, CreationDate=datetime.utcnow(),
                             Password=form3.newpassword.data, UserRole=1)
             db.session.add(new_user)
             db.session.commit()
             flash('User added!')
 
-        return redirect(url_for('index'))
+        return redirect(url_for('index'))  # After processing POST request, refresh page with GET method, normally.
 
     posts = db.session.query(Post).order_by(Post.CreationDate.desc()).all()
 
-    for post in posts:
+    for post in posts:  # Prepare shortened version of post
         if len(post.Content.split(' ')) > 7:
             post.brief_content = ' '.join(post.Content.split(' ')[:7])+'...'
         else:
@@ -144,13 +144,14 @@ def index():
 
 
 @app.route('/logout_handle', methods=['GET'])
-def logout_handle():
+def logout_handle():    # If logged in, home.html template gives access to link to logout.
+                        # Logging out is just deleting user key from session dictionary
     del(session['user'])
     flash('Logged out')
     return redirect(url_for('index'))
 
 
-@app.route('/user/<string:Login>')
+@app.route('/user/<string:Login>')  # i.e /user/john will invoke user function with Login='john' parameter
 def user(Login):
     user = db.session.query(User).filter_by(Login=Login).one()
     status = db.session.query(Role).filter_by(idRoles=user.UserRole).one()
@@ -160,9 +161,8 @@ def user(Login):
     for comment in comments:
         comment.parent_content = comment.parent.Content
 
+    #  And user function will return rendered html page and browser will display it
     return render_template('user.html', user=user, status=status.RoleName, posts=posts, comments=comments)
-
-
 
 
 @app.route('/post/<string:idPost>', methods=['GET', 'POST'])
@@ -194,4 +194,4 @@ def post(idPost):
                            form=form)
 
 
-app.run(host='localhost', port=8080, debug=True)
+app.run(host='localhost', port=8080, debug=True)  # Finally, after all these years, run prepared flask application
