@@ -25,5 +25,5 @@ pip3 install -r requirements
 
 ```
 cd ~/multidiary
-python3 multidiary
+python3 multidiary.py
 ```
