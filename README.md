@@ -54,6 +54,7 @@ Server may be run on Docker like in linux or without it.
         * set address and port to `localhos:3306`
 
 ## Running Flask server
+
 * Make sure to change `SQLALCHEMY_DATABASE_URI` in `config.py` to `'mysql+pymysql://root:pw@0.0.0.0:3306/Mikroblog'`
 * If you are running server without Docker, also change address from `0.0.0.0` to `localhost`.
 ```
