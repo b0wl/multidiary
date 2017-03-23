@@ -2,28 +2,13 @@ from datetime import datetime
 
 from flask import Flask, render_template, redirect, flash, url_for, request, g, session
 from flask_sqlalchemy import SQLAlchemy
-from flask_wtf import Form
-from wtforms import StringField
 
 from models import User, Role, Post, Comment
+from forms import RegisterForm, LoginForm, NewContentForm
 
 app = Flask('wieloblog')  # create flask app
 app.config.from_object('config')  # quick configuration from file config.py
 db = SQLAlchemy(app)  # connect database with interface provided by sqlalchemy
-
-
-class NewContentForm(Form): # Forms for submitting data
-    content = StringField('content')
-
-
-class LoginForm(Form):
-    login = StringField('Login')
-    password = StringField('Password')
-
-
-class RegisterForm(Form):
-    newlogin = StringField('Login')
-    newpassword = StringField('Password')
 
 
 @app.before_request # Triggered BEFORE each request. Just checking if user is logged in
@@ -134,6 +119,5 @@ def post(idPost):
                            post=post,
                            comments=comments,
                            form=form)
-
 
 app.run(host='localhost', port=8080, debug=True)  # Finally, after all these years, run prepared flask application
