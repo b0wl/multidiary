@@ -1,4 +1,5 @@
 mysqlclient
+pymysql
 flask
 flask-sqlalchemy
 flask-wtf
