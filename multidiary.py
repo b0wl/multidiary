@@ -1,69 +1,11 @@
+from datetime import datetime
+
 from flask import Flask, render_template, redirect, flash, url_for, request, g, session
 from flask_sqlalchemy import SQLAlchemy
-
 from flask_wtf import Form
 from wtforms import StringField
 
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, Integer, VARCHAR, DateTime, ForeignKey
-from sqlalchemy.orm import relationship
-
-from datetime import datetime
-
-Base = declarative_base()
-
-#  derek banas - python tutorial - fastest way to learn python syntax. Derek is cool guy.
-
-
-class User(Base):
-    __tablename__ = 'Users'
-    idUsers = Column(Integer, primary_key=True, nullable=False)
-    Login = Column(VARCHAR, nullable=False)
-    Password = Column(VARCHAR, nullable=False)
-    CreationDate = Column(DateTime, nullable=False)
-
-    UserRole = Column(Integer, ForeignKey('Roles.idRoles'), nullable=False)
-
-    NumPosts = Column(Integer, nullable=False, default=0)
-    NumComments = Column(Integer, nullable=False, default=0)
-
-    # Python only objects
-    posts =relationship("Post", back_populates='author')
-    comments =relationship("Comment", back_populates='author')
-
-
-class Post(Base):
-    __tablename__ = 'Posts'
-    idPosts = Column(Integer, primary_key=True, nullable=False)
-    Content = Column(VARCHAR, nullable=False)
-    CreationDate = Column(DateTime, nullable=False)
-
-    Author = Column(Integer, ForeignKey('Users.idUsers'), nullable=False)
-    # object of type User with id = Author
-    author = relationship("User", back_populates="posts")
-
-    NumComments = Column(Integer, nullable=False, default=0)
-    comments =relationship("Comment", back_populates='parent')
-
-
-class Comment(Base):
-    __tablename__ = 'Comments'
-    idComments = Column(Integer, primary_key=True, nullable=False)
-    Content = Column(VARCHAR, nullable=False)
-    CreationDate = Column(DateTime, nullable=False)
-
-    Author = Column(Integer, ForeignKey('Users.idUsers'), nullable=False)
-    author = relationship("User", back_populates="comments")
-
-    ParentPost = Column(Integer, ForeignKey('Posts.idPosts'), nullable=False)
-    parent = relationship("Post", back_populates="comments")
-
-
-class Role(Base):
-    __tablename__ = 'Roles'
-    idRoles = Column(Integer, primary_key=True, nullable=False)
-    RoleName = Column(VARCHAR, nullable=False)
-
+from models import User, Role, Post, Comment
 
 app = Flask('wieloblog')  # create flask app
 app.config.from_object('config')  # quick configuration from file config.py
