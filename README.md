@@ -15,9 +15,9 @@ pip3 install -r requirements
 ## Running MySQL server
 
 * [Install Docker](https://docs.docker.com/engine/installation/linux/ubuntulinux/)
-* Create ~/multidiary/data if nonexisting
+* Create ~/multidiary/.data if nonexisting
 * Run `docker run --name multidiary-mysql -e MYSQL_ROOT_PASSWORD=pw -d -p 3306:3306 -v ~/multidiary/.data:/var/lib/mysql mysql`
-* Check, if you can connect to db at localhost:3306 (_you may use `MySQL workbench`_)
+* Check, if you can connect to db at localhost:3306. _You may use `MySQL workbench`_
 * Create and populate tables using provided scripts
 
 ## Running Flask server
