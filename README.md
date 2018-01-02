@@ -14,7 +14,7 @@ pip3 install -r requirements
 
 ## Running MySQL server
 
-* [Install Docker](https://docs.docker.com/engine/installation/linux/ubuntulinux/)
+* [Install Docker](https://docs.docker.com/engine/installation/linux/docker-ce/ubuntu/)
 * Create ~/multidiary/.data if nonexisting
 * Run `docker run --name multidiary-mysql -e MYSQL_ROOT_PASSWORD=pw -d -p 3306:3306 -v ~/multidiary/.data:/var/lib/mysql mysql`
 * Check, if you can connect to db at localhost:3306. _You may use `MySQL workbench`_
